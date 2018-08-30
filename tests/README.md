@@ -8,7 +8,7 @@
  * In file $CHROMIUM_ROOT/src/chrome/chrome_tests.gypi add the following to the sources section of the target browser_tests
  
 ```
-  'browser/media/encrypted_media_istypesupported_browsertest.cc',
+  'browser/media/encrypted_media_supported_types_browsertest.cc',
   # OCDM tests
   '<(DEPTH)/media/cdm/ppapi/external_open_cdm/src/browser/chrome/tests/ocdm_encrypted_media_istypesupported_browsertest.cc',
 ```
