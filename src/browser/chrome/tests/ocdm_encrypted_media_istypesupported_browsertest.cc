@@ -149,7 +149,7 @@ class OpenCDMEncryptedMediaIsTypeSupportedBaseTest :
 
   // Update the command line to load |adapter_name| for
   // |pepper_type_for_key_system|.
-  void RegisterPepperCdm(CommandLine* command_line,
+  void RegisterPepperCdm(base::CommandLine* command_line,
                          const std::string& adapter_name,
                          const std::string& pepper_type_for_key_system,
                          bool expect_adapter_exists = true) {
@@ -158,8 +158,7 @@ class OpenCDMEncryptedMediaIsTypeSupportedBaseTest :
     is_pepper_cdm_registered_ = true;
 
     // Append the switch to register the appropriate adapter.
-    base::FilePath plugin_dir;
-    EXPECT_TRUE(PathService::Get(base::DIR_MODULE, &plugin_dir));
+    base::FilePath plugin_dir("/usr/lib64/chromium/");
     base::FilePath plugin_lib = plugin_dir.AppendASCII(adapter_name);
     EXPECT_EQ(expect_adapter_exists, base::PathExists(plugin_lib));
     base::FilePath::StringType pepper_plugin = plugin_lib.value();
@@ -174,17 +173,15 @@ class OpenCDMEncryptedMediaIsTypeSupportedBaseTest :
     // TODO(mla): remove after communication to cdmi is possible 
     //            from within the sandbox
     command_line->AppendSwitch(switches::kNoSandbox);
-    // TODO(mla): swich needed until unprefixed EME version available 
-    command_line->AppendSwitch(switches::kEnableEncryptedMedia);
   }
 
   void LoadTestPage() {
     // Load the test page needed. IsConcreteSupportedKeySystem() needs some
     // JavaScript and a video loaded in order to work.
     if (!is_test_page_loaded_) {
-      ASSERT_TRUE(test_server()->Start());
-      GURL gurl = test_server()->GetURL(
-          "files/media/drmock/test.html");
+      ASSERT_TRUE(embedded_test_server()->Start());
+      GURL gurl = embedded_test_server()->GetURL(
+          "/media/drmock/test.html");
       ui_test_utils::NavigateToURL(browser(), gurl);
       is_test_page_loaded_ = true;
     }
@@ -272,7 +269,7 @@ class OpenCDMEncryptedMediaIsTypeSupportedTest
     : public OpenCDMEncryptedMediaIsTypeSupportedBaseTest {
 
  protected:
-  virtual void SetUpCommandLine(CommandLine* command_line) OVERRIDE {
+  virtual void SetUpCommandLine(base::CommandLine* command_line) override {
     // Platform-specific filename relative to the chrome executable.
     const char adapter_file_name[] =
 #if defined(OS_MACOSX)
@@ -293,7 +290,7 @@ class OpenCDMEncryptedMediaIsTypeSupportedTest
 class OpenCDMEncryptedMediaIsTypeSupportedRegisteredWithWrongPathTest
     : public OpenCDMEncryptedMediaIsTypeSupportedBaseTest {
  protected:
-  virtual void SetUpCommandLine(CommandLine* command_line) OVERRIDE {
+  virtual void SetUpCommandLine(base::CommandLine* command_line) override {
    RegisterPepperCdm(command_line,
                      "libopencdmadapterwrongname.so",
                      kPepperTypeForKeySystem,
